@@ -602,10 +602,10 @@ public class Player : NSObject, AVAudioPlayerDelegate {
                     }
                     
                     self?._playingPath = assetPath
-                    //self?.setBuffering(false)
+                    self?.setBuffering(false)
                     
                     self?.addPostPlayingBufferListeners(item: item)
-                    self?.addPlayerStatusListeners(item: (self?.player)!);
+                    //self?.addPlayerStatusListeners(item: (self?.player)!);
                     
                     result(nil)
                 case .failed:
@@ -670,13 +670,8 @@ public class Player : NSObject, AVAudioPlayerDelegate {
     }
     
     private func addPostPlayingBufferListeners(item : SlowMoPlayerItem){
-        observerStatus.append( item.observe(\.isPlaybackBufferEmpty, options: [.new]) { [weak self] (value, _) in
-            // show buffering
-            if(value.isPlaybackBufferEmpty){
-             self?.setBuffering(true)
-            }else{
-            self?.setBuffering(false)
-            }
+        observerStatus.append( item.observe(\.isPlaybackBufferEmpty, options: [.new]) { [weak self] (_, _) in
+            self?.setBuffering(true)
         })
         
         observerStatus.append( item.observe(\.isPlaybackLikelyToKeepUp, options: [.new]) { [weak self] (_, _) in
@@ -691,23 +686,23 @@ public class Player : NSObject, AVAudioPlayerDelegate {
     }
     
     
-    private func addPlayerStatusListeners(item : AVQueuePlayer){
-        if #available(iOS 10.0, OSX 10.12, *){
-            observerStatus.append( item.observe(\.timeControlStatus, options: [.new]) { [weak self] (value, _) in
-                // show buffering
-                if(value.timeControlStatus == AVPlayer.TimeControlStatus.playing){
-                    self?.playing = true;
-                    self?.updateNotifStatus(playing: true, stopped: false, rate: self?.player?.rate)
-                }else if(value.timeControlStatus == AVPlayer.TimeControlStatus.paused){
-                    self?.playing = false;
-                    self?.updateNotifStatus(playing: false, stopped: false, rate: 0)
-                }else{
-                    self?.playing = false;
-                    self?.updateNotifStatus(playing: false, stopped: false, rate: 0)
-                }
-            })
-        }
-    }
+    //private func addPlayerStatusListeners(item : AVQueuePlayer){
+    //    if #available(iOS 10.0, OSX 10.12, *){
+    //        observerStatus.append( item.observe(\.timeControlStatus, options: [.new]) { [weak self] (value, _) in
+    //            // show buffering
+    //            if(value.timeControlStatus == AVPlayer.TimeControlStatus.playing){
+    //                self?.playing = true;
+    //                self?.updateNotifStatus(playing: true, stopped: false, rate: self?.player?.rate)
+    //            }else if(value.timeControlStatus == AVPlayer.TimeControlStatus.paused){
+    //                self?.playing = false;
+    //                self?.updateNotifStatus(playing: false, stopped: false, rate: 0)
+    //            }else{
+    //                self?.playing = false;
+    //                self?.updateNotifStatus(playing: false, stopped: false, rate: 0)
+    //            }
+    //        })
+    //    }
+    //}
     
     func getMillisecondsFromCMTime(_ time: CMTime) -> Double {
         let seconds = CMTimeGetSeconds(time);
@@ -833,9 +828,9 @@ public class Player : NSObject, AVAudioPlayerDelegate {
         self.player?.rate = self.rate
         self.currentTimeTimer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
         self.currentTimeTimer?.fire()
-//        self.playing = true
+        self.playing = true
         
-        //self.updateNotifStatus(playing: self.playing, stopped: false, rate: self.player?.rate)
+        self.updateNotifStatus(playing: self.playing, stopped: false, rate: self.player?.rate)
     }
     
     private var looper: Any?
@@ -947,9 +942,9 @@ public class Player : NSObject, AVAudioPlayerDelegate {
     func pause(){
         self.player?.pause()
         
-//        self.updateNotifStatus(playing: false, stopped: false, rate: 0)
+        self.updateNotifStatus(playing: false, stopped: false, rate: 0)
         
-//        self.playing = false
+        self.playing = false
         self.currentTimeTimer?.invalidate()
     }
     
