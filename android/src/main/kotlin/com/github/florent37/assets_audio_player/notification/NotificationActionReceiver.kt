@@ -12,13 +12,13 @@ class NotificationActionReceiver : BroadcastReceiver() {
         val player = AssetsAudioPlayerPlugin.instance?.assetsAudioPlayer?.getPlayer(playerId)
                 ?: return
         when (intent.action) {
-             NotificationAction.ACTION_PREV -> player.prev()
-             NotificationAction.ACTION_STOP -> {
-                 player.askStop()
-                 //NotificationManager(context).hideNotification()
-             }
-             NotificationAction.ACTION_NEXT -> player.next()
-             NotificationAction.ACTION_TOGGLE -> {
+            NotificationAction.ACTION_PREV -> player.prev()
+            NotificationAction.ACTION_STOP -> {
+                player.askStop()
+                //NotificationManager(context).hideNotification()
+            }
+            NotificationAction.ACTION_NEXT -> player.next()
+            NotificationAction.ACTION_TOGGLE -> {
                 //val notificationAction = intent.getSerializableExtra(NotificationService.EXTRA_NOTIFICATION_ACTION) as NotificationAction.Show
                 player.askPlayOrPause() //send it to flutter
 
@@ -27,10 +27,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
             }
             NotificationAction.ACTION_SELECT -> {
                 context.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
-                var intent : Intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-                intent.setAction(NotificationAction.ACTION_SELECT)
-                intent.putExtra(NotificationService.TRACK_ID,trackID)
-                context.startActivity(intent)
+                var intent : Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
+                intent?.action = NotificationAction.ACTION_SELECT
+                intent?.putExtra(NotificationService.TRACK_ID,trackID)
+                context.startActivity(intent!!)
             }
         }
     }
